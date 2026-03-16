@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>你是哪种女孩？性格测试</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #fff5f9 0%, #fffbf0 50%, #f0f8ff 100%);
+        }
+
+        .floating-shape {
+            position: fixed;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: float 6s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        .shape1 { width: 200px; height: 200px; background: #FFD4E5; top: 10%; left: 5%; animation-delay: 0s; }
+        .shape2 { width: 150px; height: 150px; background: #FFE5CC; top: 60%; right: 10%; animation-delay: 1s; }
+        .shape3 { width: 180px; height: 180px; background: #D4F1FF; top: 20%; right: 5%; animation-delay: 2s; }
+        .shape4 { width: 160px; height: 160px; background: #E8D4FF; bottom: 10%; left: 15%; animation-delay: 1.5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(30px); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .landing { 
+            min-height: 100vh; 
+            position: relative; 
+            padding: 20px;
+        }
+
+        .container { max-width: 480px; margin: 0 auto; position: relative; z-index: 1; }
+
+        .hero { text-align: center; margin-bottom: 40px; animation: slideUp 0.6s ease; }
+        .emoji-large { font-size: 72px; margin-bottom: 16px; animation: scaleIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .title { font-size: 32px; font-weight: 700; background: linear-gradient(135deg, #FF6B9D 0%, #FFA726 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 12px; line-height: 1.3; }
+        .subtitle { font-size: 15px; color: #666; margin-bottom: 8px; font-weight: 500; }
+        .tagline { font-size: 13px; color: #FF6B9D; font-weight: 500; margin-bottom: 32px; }
+
+        .features { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 32px; animation: slideUp 0.8s ease 0.2s backwards; }
+        .feature-card { background: rgba(255, 255, 255, 0.8); border: 1px solid rgba(255, 107, 157, 0.2); border-radius: 16px; padding: 16px; text-align: center; transition: all 0.3s ease; }
+        .feature-card:hover { border-color: rgba(255, 107, 157, 0.5); transform: translateY(-4px); }
+        .feature-icon { font-size: 32px; margin-bottom: 8px; }
+        .feature-text { font-size: 12px; font-weight: 600; color: #333; line-height: 1.4; }
+
+        .cta-section { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 8px 24px rgba(255, 107, 157, 0.12); margin-bottom: 24px; animation: slideUp 1s ease 0.4s backwards; }
+        .preview-text { font-size: 13px; color: #666; margin-bottom: 16px; text-align: center; }
+
+        .personality-preview { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .person-type { background: linear-gradient(135deg, #FFF5F8 0%, #FFFBF0 100%); border: 1px solid #FFD4E5; border-radius: 12px; padding: 12px; text-align: center; transition: all 0.3s ease; }
+        .person-type:hover { border-color: #FF6B9D; transform: scale(1.05); }
+        .person-emoji { font-size: 28px; margin-bottom: 6px; }
+        .person-name { font-size: 12px; font-weight: 600; color: #FF6B9D; margin-bottom: 3px; }
+        .person-desc { font-size: 10px; color: #666; line-height: 1.3; }
+
+        .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #FFE5CC; }
+        .stat { text-align: center; }
+        .stat-number { font-size: 20px; font-weight: 700; background: linear-gradient(135deg, #FF6B9D, #FFA726); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .stat-label { font-size: 11px; color: #666; margin-top: 4px; }
+
+        .cta-button { width: 100%; padding: 16px; background: linear-gradient(135deg, #FF6B9D 0%, #FFA726 100%); border: none; border-radius: 14px; font-size: 16px; font-weight: 700; color: white; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 6px 20px rgba(255, 107, 157, 0.3); margin-bottom: 12px; }
+        .cta-button:hover { transform: translateY(-2px); }
+        .secondary-button { width: 100%; padding: 12px; background: transparent; border: 2px solid #FFD4E5; border-radius: 14px; font-size: 14px; font-weight: 600; color: #FF6B9D; cursor: pointer; transition: all 0.3s ease; }
+        .secondary-button:hover { border-color: #FF6B9D; background: rgba(255, 107, 157, 0.05); }
+
+        .results-preview { background: linear-gradient(135deg, #FFF5F8 0%, #FFFBF0 100%); border: 1px solid #FFD4E5; border-radius: 16px; padding: 16px; margin-bottom: 24px; animation: slideUp 1.2s ease 0.6s backwards; }
+        .results-title { font-size: 13px; font-weight: 700; color: #FF6B9D; margin-bottom: 12px; text-align: center; text-transform: uppercase; }
+        .result-example { background: white; border-radius: 12px; padding: 12px; margin-bottom: 8px; font-size: 12px; color: #333; line-height: 1.4; }
+        .result-label { font-weight: 600; color: #FF6B9D; margin-right: 4px; }
+
+        .social-proof { text-align: center; margin-bottom: 24px; animation: slideUp 1.4s ease 0.8s backwards; }
+        .stars { font-size: 14px; letter-spacing: 2px; color: #FFA726; }
+        .rating { font-size: 11px; color: #666; margin-top: 8px; }
+
+        .hidden { display: none; }
+        
+        .test-wrapper { padding: 20px; min-height: 100vh; }
+        .test-container { max-width: 600px; margin: 0 auto; }
+        .test-header { text-align: center; margin-bottom: 28px; padding: 24px 0; border-bottom: 2px solid #FFC0CB; }
+        .test-title { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #FF6B9D, #FFA726); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 8px; }
+        .test-subtitle { font-size: 14px; color: #666; margin-bottom: 16px; }
+        .progress-bar { width: 100%; height: 6px; background: #f0f0f0; border-radius: 3px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #FF6B9D, #FFA726); border-radius: 3px; transition: width 0.3s; }
+
+        .question-card { display: none; animation: slideUp 0.4s ease; }
+        .question-card.active { display: block; }
+        .q-number { font-size: 12px; color: #FF6B9D; font-weight: 600; margin-bottom: 12px; text-transform: uppercase; }
+        .q-text { font-size: 18px; font-weight: 600; color: #2c3e50; margin-bottom: 20px; }
+        .q-options { display: flex; flex-direction: column; gap: 10px; }
+        .q-option { position: relative; }
+        .q-option input { display: none; }
+        .q-label { display: flex; align-items: center; padding: 14px; border: 2px solid #e8e8e8; border-radius: 10px; cursor: pointer; font-size: 14px; color: #333; transition: all 0.3s; }
+        .q-option input:checked + .q-label { border-color: #FF6B9D; background: #FFF5F8; color: #FF6B9D; font-weight: 600; }
+        .q-circle { width: 18px; height: 18px; border: 2px solid #e8e8e8; border-radius: 50%; margin-right: 10px; flex-shrink: 0; }
+        .q-option input:checked + .q-label .q-circle { background: linear-gradient(135deg, #FF6B9D, #FFA726); border-color: #FF6B9D; }
+
+        .result-section { display: none; }
+        .result-section.active { display: block; }
+        .result-icon { font-size: 60px; text-align: center; margin-bottom: 16px; }
+        .result-title { font-size: 32px; font-weight: 700; color: #FF6B9D; text-align: center; margin-bottom: 12px; }
+        .result-desc { font-size: 15px; color: #666; text-align: center; line-height: 1.6; margin-bottom: 24px; }
+
+        .dimensions-table { width: 100%; font-size: 12px; background: #f9f9f9; border-radius: 14px; padding: 20px; margin-bottom: 20px; }
+        .dim-row { display: flex; justify-content: space-between; margin-bottom: 12px; }
+        .dim-label { font-weight: 600; color: #333; }
+        .dim-score { background: linear-gradient(135deg, #FF6B9D, #FFA726); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 600; }
+
+        .radar-box { background: white; border: 1px solid #e8e8e8; border-radius: 14px; padding: 20px; margin-bottom: 20px; min-height: 300px; display: flex; align-items: center; justify-content: center; }
+
+        .traits-box { background: #FFF5F8; border: 2px solid #FFD4E5; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+        .traits-title { font-size: 13px; font-weight: 600; color: #FF6B9D; margin-bottom: 12px; text-transform: uppercase; }
+        .traits { display: flex; flex-wrap: wrap; gap: 8px; }
+        .trait-tag { background: white; border: 1px solid #FFD4E5; color: #FF6B9D; padding: 6px 12px; border-radius: 18px; font-size: 12px; font-weight: 500; }
+
+        .suggestion-box { background: #FFF8E7; border-left: 4px solid #FFA726; border-radius: 8px; padding: 14px; margin-bottom: 20px; font-size: 13px; color: #333; line-height: 1.6; }
+        .suggestion-title { font-weight: 600; color: #B8860B; margin-bottom: 6px; }
+
+        .restart-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #FF6B9D, #FFA726); border: none; border-radius: 10px; color: white; font-size: 15px; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="floating-shape shape1"></div>
+    <div class="floating-shape shape2"></div>
+    <div class="floating-shape shape3"></div>
+    <div class="floating-shape shape4"></div>
+
+    <div class="landing" id="landing">
+        <div class="container">
+            <div class="hero">
+                <div class="emoji-large">✨</div>
+                <div class="title">你是哪种女孩？</div>
+                <div class="subtitle">一个测试发现你的真实人设</div>
+                <div class="tagline">30道题 · 5分钟 · 超准</div>
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <span class="feature-icon">🎯</span>
+                    <div class="feature-text">30道精选题</div>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">⚡</span>
+                    <div class="feature-text">5分钟快速出结果</div>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">📊</span>
+                    <div class="feature-text">6维度深度分析</div>
+                </div>
+                <div class="feature-card">
+                    <span class="feature-icon">💫</span>
+                    <div class="feature-text">个性化成长建议</div>
+                </div>
+            </div>
+
+            <div class="cta-section">
+                <div class="preview-text">你可能是这5种女孩之一</div>
+                <div class="personality-preview">
+                    <div class="person-type">
+                        <div class="person-emoji">🎨</div>
+                        <div class="person-name">创意女孩</div>
+                        <div class="person-desc">脑子全是想法</div>
+                    </div>
+                    <div class="person-type">
+                        <div class="person-emoji">👯</div>
+                        <div class="person-name">社交女孩</div>
+                        <div class="person-desc">魅力天生自带</div>
+                    </div>
+                    <div class="person-type">
+                        <div class="person-emoji">⚡</div>
+                        <div class="person-name">执行女孩</div>
+                        <div class="person-desc">说到做到的人</div>
+                    </div>
+                    <div class="person-type">
+                        <div class="person-emoji">🧠</div>
+                        <div class="person-name">思考女孩</div>
+                        <div class="person-desc">看透事物本质</div>
+                    </div>
+                    <div class="person-type">
+                        <div class="person-emoji">🦄</div>
+                        <div class="person-name">全能女孩</div>
+                        <div class="person-desc">样样都很行</div>
+                    </div>
+                </div>
+
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-number">6</div>
+                        <div class="stat-label">个维度</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">5</div>
+                        <div class="stat-label">种人设</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">∞</div>
+                        <div class="stat-label">种可能</div>
+                    </div>
+                </div>
+
+                <button class="cta-button" onclick="startTest()">开始测试，发现真实的我</button>
+                <button class="secondary-button" onclick="togglePreview()">先看看结果什么样</button>
+            </div>
+
+            <div class="results-preview" id="previewResults" style="display: none;">
+                <div class="results-title">📊 你会看到什么</div>
+                <div class="result-example">
+                    <span class="result-label">你的人设：</span>创意女孩 🎨
+                </div>
+                <div class="result-example">
+                    <span class="result-label">你的特点：</span>脑子里全是想法，热爱表达自己
+                </div>
+                <div class="result-example">
+                    <span class="result-label">你的优势：</span>富有想象力、独立思考、勇于创新
+                </div>
+                <div class="result-example">
+                    <span class="result-label">维度分析：</span>创意力95% | 社交力65% | 执行力45%...
+                </div>
+                <div class="result-example">
+                    <span class="result-label">给你的建议：</span>加强执行力，让想法落地成现实
+                </div>
+            </div>
+
+            <div class="social-proof">
+                <div class="stars">★★★★★</div>
+                <div class="rating">3500+ 女孩已测试，都说超准</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="test-wrapper hidden" id="testWrapper">
+        <div class="test-container">
+            <div class="test-header">
+                <div class="test-title">✨ 你是哪种女孩</div>
+                <div class="test-subtitle">一个测试发现你的真实人设</div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+                </div>
+            </div>
+            <div id="questionsContainer"></div>
+            <div id="resultContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { q: "你平时是个什么样的人?", options: [
+                { text: "脑子里全是想法，很难安静下来", scores: { creativity: 5, sociability: 2, practicality: 1, thoughtfulness: 2, confidence: 3, aesthetics: 4 } },
+                { text: "哪里热闹往哪里去，很享受和人聊天", scores: { creativity: 2, sociability: 5, practicality: 1, thoughtfulness: 1, confidence: 3, aesthetics: 2 } },
+                { text: "有计划有目标，说到就能做到", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 2, confidence: 4, aesthetics: 1 } },
+                { text: "喜欢观察和思考，内心很丰富", scores: { creativity: 2, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 2, aesthetics: 2 } }
+            ]},
+            { q: "遇到新鲜事物，你的反应是?", options: [
+                { text: "我要第一个尝试！不能错过", scores: { creativity: 4, sociability: 3, practicality: 1, thoughtfulness: 1, confidence: 5, aesthetics: 4 } },
+                { text: "看朋友怎么反应，再跟风", scores: { creativity: 1, sociability: 5, practicality: 2, thoughtfulness: 1, confidence: 1, aesthetics: 2 } },
+                { text: "评估一下值不值得，再决定", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 3, confidence: 3, aesthetics: 1 } },
+                { text: "思考背后的逻辑和意义", scores: { creativity: 2, sociability: 1, practicality: 2, thoughtfulness: 5, confidence: 2, aesthetics: 1 } }
+            ]},
+            { q: "工作/学习中，大家怎么评价你?", options: [
+                { text: "想法很多，总能出新主意", scores: { creativity: 5, sociability: 2, practicality: 1, thoughtfulness: 2, confidence: 4, aesthetics: 3 } },
+                { text: "很好相处，总是能调节气氛", scores: { creativity: 1, sociability: 5, practicality: 1, thoughtfulness: 1, confidence: 3, aesthetics: 1 } },
+                { text: "可靠，说好的事情一定做到", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 1, confidence: 4, aesthetics: 1 } },
+                { text: "有想法有深度，话不多但很有分量", scores: { creativity: 2, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 3, aesthetics: 1 } }
+            ]},
+            { q: "有意见不同时，你会?", options: [
+                { text: "我有我的想法，坚持自己的立场", scores: { creativity: 3, sociability: 1, practicality: 2, thoughtfulness: 1, confidence: 5, aesthetics: 2 } },
+                { text: "先听听别人的想法，保持和气", scores: { creativity: 1, sociability: 5, practicality: 2, thoughtfulness: 1, confidence: 1, aesthetics: 1 } },
+                { text: "冷静分析，谁对就听谁的", scores: { creativity: 1, sociability: 1, practicality: 3, thoughtfulness: 4, confidence: 2, aesthetics: 1 } },
+                { text: "一起讨论，看能不能找到最优解", scores: { creativity: 3, sociability: 2, practicality: 2, thoughtfulness: 3, confidence: 3, aesthetics: 2 } }
+            ]},
+            { q: "打扮自己时最看重?", options: [
+                { text: "独特有个性，和别人不一样", scores: { creativity: 5, sociability: 2, practicality: 1, thoughtfulness: 1, confidence: 4, aesthetics: 5 } },
+                { text: "显气质有魅力，吸引他人目光", scores: { creativity: 2, sociability: 4, practicality: 2, thoughtfulness: 1, confidence: 3, aesthetics: 4 } },
+                { text: "舒适方便，怎么舒服怎么穿", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 2, confidence: 2, aesthetics: 1 } },
+                { text: "有品味有气度，简约优雅", scores: { creativity: 2, sociability: 2, practicality: 2, thoughtfulness: 4, confidence: 3, aesthetics: 3 } }
+            ]},
+            { q: "失败或受挫时?", options: [
+                { text: "很快调整心态，把失败当灵感", scores: { creativity: 5, sociability: 1, practicality: 2, thoughtfulness: 1, confidence: 4, aesthetics: 3 } },
+                { text: "有点难受，需要朋友陪伴和鼓励", scores: { creativity: 1, sociability: 5, practicality: 1, thoughtfulness: 1, confidence: 1, aesthetics: 1 } },
+                { text: "再来一次，分析原因改进策略", scores: { creativity: 2, sociability: 1, practicality: 5, thoughtfulness: 2, confidence: 4, aesthetics: 1 } },
+                { text: "深思为什么会这样，有点自我怀疑", scores: { creativity: 1, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 1, aesthetics: 1 } }
+            ]},
+            { q: "闲下来你喜欢?", options: [
+                { text: "做一些创意的事，折腾新东西", scores: { creativity: 5, sociability: 1, practicality: 1, thoughtfulness: 2, confidence: 3, aesthetics: 4 } },
+                { text: "和朋友聚会，群里热闹是快乐", scores: { creativity: 2, sociability: 5, practicality: 1, thoughtfulness: 1, confidence: 3, aesthetics: 2 } },
+                { text: "制定计划，充实自己学新技能", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 2, confidence: 3, aesthetics: 1 } },
+                { text: "一个人静下来，看书或思考人生", scores: { creativity: 2, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 2, aesthetics: 2 } }
+            ]},
+            { q: "你怎样看待自己?", options: [
+                { text: "我很特别，和别人都不一样", scores: { creativity: 5, sociability: 1, practicality: 1, thoughtfulness: 2, confidence: 5, aesthetics: 4 } },
+                { text: "我很招人喜欢，人缘很不错", scores: { creativity: 1, sociability: 5, practicality: 1, thoughtfulness: 1, confidence: 3, aesthetics: 2 } },
+                { text: "我很能干，想要的一般能得到", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 1, confidence: 5, aesthetics: 1 } },
+                { text: "我很有想法，看得比较透彻", scores: { creativity: 2, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 3, aesthetics: 1 } }
+            ]},
+            { q: "感情方面，你重视?", options: [
+                { text: "热烈、激情、有趣的互动", scores: { creativity: 4, sociability: 4, practicality: 1, thoughtfulness: 1, confidence: 4, aesthetics: 4 } },
+                { text: "陪伴、理解、有人需要我", scores: { creativity: 1, sociability: 5, practicality: 2, thoughtfulness: 2, confidence: 2, aesthetics: 1 } },
+                { text: "稳定、可靠、能一起向上", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 2, confidence: 4, aesthetics: 1 } },
+                { text: "有共鸣、懂我、能深入交流", scores: { creativity: 2, sociability: 2, practicality: 1, thoughtfulness: 5, confidence: 2, aesthetics: 1 } }
+            ]},
+            { q: "最让你感到充实快乐是?", options: [
+                { text: "创造出新的东西或想法", scores: { creativity: 5, sociability: 1, practicality: 1, thoughtfulness: 2, confidence: 4, aesthetics: 5 } },
+                { text: "和朋友在一起，分享和聊天", scores: { creativity: 1, sociability: 5, practicality: 1, thoughtfulness: 1, confidence: 3, aesthetics: 1 } },
+                { text: "完成目标，看到自己的进步", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 1, confidence: 5, aesthetics: 1 } },
+                { text: "明白一些事理，精神上的满足", scores: { creativity: 1, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 2, aesthetics: 1 } }
+            ]},
+            { q: "面对压力你的方式?", options: [
+                { text: "创意地解决，把问题变有趣", scores: { creativity: 5, sociability: 1, practicality: 2, thoughtfulness: 1, confidence: 3, aesthetics: 4 } },
+                { text: "找朋友倾诉，寻求支持和陪伴", scores: { creativity: 1, sociability: 5, practicality: 1, thoughtfulness: 1, confidence: 1, aesthetics: 1 } },
+                { text: "制定计划，一步步解决", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 2, confidence: 4, aesthetics: 1 } },
+                { text: "思考和反思，找到内心的平静", scores: { creativity: 1, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 2, aesthetics: 1 } }
+            ]},
+            { q: "说说你的理想生活?", options: [
+                { text: "自由、创意、充满可能性", scores: { creativity: 5, sociability: 2, practicality: 1, thoughtfulness: 2, confidence: 5, aesthetics: 5 } },
+                { text: "有朋友有爱，热闹而温暖", scores: { creativity: 1, sociability: 5, practicality: 1, thoughtfulness: 2, confidence: 2, aesthetics: 1 } },
+                { text: "稳定成功，不断超越自己", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 2, confidence: 5, aesthetics: 1 } },
+                { text: "有深度有意义，精神充盈", scores: { creativity: 1, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 2, aesthetics: 2 } }
+            ]},
+            { q: "你最害怕什么?", options: [
+                { text: "被束缚，平庸，没有个性", scores: { creativity: 5, sociability: 1, practicality: 1, thoughtfulness: 2, confidence: 4, aesthetics: 4 } },
+                { text: "被冷落，孤独，没人在乎", scores: { creativity: 1, sociability: 5, practicality: 1, thoughtfulness: 1, confidence: 1, aesthetics: 1 } },
+                { text: "失败，失控，实现不了目标", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 1, confidence: 2, aesthetics: 1 } },
+                { text: "虚度，迷茫，没有意义", scores: { creativity: 2, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 2, aesthetics: 1 } }
+            ]},
+            { q: "别人给你的评价多是?", options: [
+                { text: "有想法，不走寻常路，很特别", scores: { creativity: 5, sociability: 2, practicality: 1, thoughtfulness: 2, confidence: 4, aesthetics: 4 } },
+                { text: "热心肠，很容易和她相处", scores: { creativity: 1, sociability: 5, practicality: 1, thoughtfulness: 1, confidence: 3, aesthetics: 1 } },
+                { text: "很靠谱，能把事情办得很好", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 2, confidence: 5, aesthetics: 1 } },
+                { text: "有品位，说话有分量有想法", scores: { creativity: 2, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 3, aesthetics: 2 } }
+            ]},
+            { q: "团队里，你的角色是?", options: [
+                { text: "出创意、想新想法的那个人", scores: { creativity: 5, sociability: 2, practicality: 1, thoughtfulness: 2, confidence: 4, aesthetics: 3 } },
+                { text: "协调和沟通，让大家好好相处", scores: { creativity: 1, sociability: 5, practicality: 2, thoughtfulness: 1, confidence: 3, aesthetics: 1 } },
+                { text: "执行和完成，把任务落实好", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 1, confidence: 4, aesthetics: 1 } },
+                { text: "分析和建议，提供专业意见", scores: { creativity: 2, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 3, aesthetics: 1 } }
+            ]},
+            { q: "最欣赏什么样的人?", options: [
+                { text: "有才华，有个性，与众不同", scores: { creativity: 5, sociability: 2, practicality: 1, thoughtfulness: 1, confidence: 4, aesthetics: 5 } },
+                { text: "温暖，亲切，让人感到被理解", scores: { creativity: 1, sociability: 5, practicality: 1, thoughtfulness: 2, confidence: 2, aesthetics: 1 } },
+                { text: "坚定，能干，有执行力", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 1, confidence: 5, aesthetics: 1 } },
+                { text: "睿智，深思，有思想有深度", scores: { creativity: 1, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 2, aesthetics: 1 } }
+            ]},
+            { q: "你觉得自己最大的优点是?", options: [
+                { text: "聪慧、创意、容易出彩", scores: { creativity: 5, sociability: 1, practicality: 1, thoughtfulness: 2, confidence: 5, aesthetics: 4 } },
+                { text: "善良、热心、让人舒服", scores: { creativity: 1, sociability: 5, practicality: 1, thoughtfulness: 1, confidence: 3, aesthetics: 1 } },
+                { text: "有毅力、有规划、能成事", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 1, confidence: 5, aesthetics: 1 } },
+                { text: "有想法、有品味、看得透", scores: { creativity: 2, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 3, aesthetics: 2 } }
+            ]},
+            { q: "社交媒体上，你通常?", options: [
+                { text: "分享创意内容和有趣的想法", scores: { creativity: 5, sociability: 2, practicality: 1, thoughtfulness: 1, confidence: 4, aesthetics: 5 } },
+                { text: "分享日常生活，和大家互动", scores: { creativity: 2, sociability: 5, practicality: 1, thoughtfulness: 1, confidence: 4, aesthetics: 2 } },
+                { text: "分享有价值的内容和成果", scores: { creativity: 1, sociability: 1, practicality: 4, thoughtfulness: 2, confidence: 4, aesthetics: 1 } },
+                { text: "很少发，更多观察和思考", scores: { creativity: 1, sociability: 1, practicality: 1, thoughtfulness: 4, confidence: 1, aesthetics: 1 } }
+            ]},
+            { q: "学习新东西时?", options: [
+                { text: "创意探索，喜欢打破规则", scores: { creativity: 5, sociability: 1, practicality: 1, thoughtfulness: 2, confidence: 4, aesthetics: 4 } },
+                { text: "找老师或朋友带，喜欢一起学", scores: { creativity: 1, sociability: 5, practicality: 2, thoughtfulness: 1, confidence: 1, aesthetics: 1 } },
+                { text: "系统学习，掌握每个细节", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 3, confidence: 4, aesthetics: 1 } },
+                { text: "深入思考原理，举一反三", scores: { creativity: 2, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 3, aesthetics: 1 } }
+            ]},
+            { q: "对金钱的态度?", options: [
+                { text: "用在有趣的事上，提升生活品质", scores: { creativity: 3, sociability: 2, practicality: 2, thoughtfulness: 1, confidence: 3, aesthetics: 4 } },
+                { text: "和朋友一起花，享受聚在一起", scores: { creativity: 2, sociability: 5, practicality: 1, thoughtfulness: 1, confidence: 2, aesthetics: 2 } },
+                { text: "理性规划，稳健投资", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 2, confidence: 4, aesthetics: 1 } },
+                { text: "投在精神提升和成长上", scores: { creativity: 2, sociability: 1, practicality: 2, thoughtfulness: 5, confidence: 2, aesthetics: 2 } }
+            ]},
+            { q: "做决策时，你倾向?", options: [
+                { text: "听直觉，相信自己的感受", scores: { creativity: 4, sociability: 2, practicality: 1, thoughtfulness: 1, confidence: 5, aesthetics: 3 } },
+                { text: "听朋友的意见，综合判断", scores: { creativity: 1, sociability: 5, practicality: 2, thoughtfulness: 1, confidence: 1, aesthetics: 1 } },
+                { text: "分析利弊，理性判断", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 3, confidence: 4, aesthetics: 1 } },
+                { text: "深思熟虑，坚持自己的信念", scores: { creativity: 2, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 3, aesthetics: 1 } }
+            ]},
+            { q: "对于改变和挑战?", options: [
+                { text: "热情拥抱，享受变化", scores: { creativity: 5, sociability: 2, practicality: 1, thoughtfulness: 1, confidence: 5, aesthetics: 4 } },
+                { text: "需要陪伴和支持，才敢尝试", scores: { creativity: 1, sociability: 5, practicality: 1, thoughtfulness: 1, confidence: 1, aesthetics: 1 } },
+                { text: "谨慎评估，确认后执行", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 2, confidence: 3, aesthetics: 1 } },
+                { text: "反复思考，理解了才接受", scores: { creativity: 1, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 2, aesthetics: 1 } }
+            ]},
+            { q: "别人的批评，你?", options: [
+                { text: "不太在意，我有我的想法", scores: { creativity: 4, sociability: 1, practicality: 1, thoughtfulness: 2, confidence: 5, aesthetics: 3 } },
+                { text: "会伤心，需要安慰", scores: { creativity: 1, sociability: 4, practicality: 1, thoughtfulness: 1, confidence: 1, aesthetics: 1 } },
+                { text: "认真听，看能否改进", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 3, confidence: 3, aesthetics: 1 } },
+                { text: "反思一下是否有道理", scores: { creativity: 1, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 2, aesthetics: 1 } }
+            ]},
+            { q: "完美的一天对你是?", options: [
+                { text: "做创意的事，有新发现", scores: { creativity: 5, sociability: 1, practicality: 1, thoughtfulness: 2, confidence: 4, aesthetics: 5 } },
+                { text: "和朋友聚在一起，很热闹", scores: { creativity: 1, sociability: 5, practicality: 1, thoughtfulness: 1, confidence: 3, aesthetics: 2 } },
+                { text: "完成了计划，看到进度", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 1, confidence: 5, aesthetics: 1 } },
+                { text: "安静思考，有所领悟", scores: { creativity: 2, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 2, aesthetics: 2 } }
+            ]},
+            { q: "总的来说，你属于?", options: [
+                { text: "热烈型，充满能量很外向", scores: { creativity: 3, sociability: 5, practicality: 1, thoughtfulness: 1, confidence: 4, aesthetics: 2 } },
+                { text: "温暖型，很有包容心", scores: { creativity: 1, sociability: 5, practicality: 2, thoughtfulness: 2, confidence: 2, aesthetics: 1 } },
+                { text: "专注型，有明确目标", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 1, confidence: 5, aesthetics: 1 } },
+                { text: "深思型，比较内向沉静", scores: { creativity: 2, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 2, aesthetics: 2 } }
+            ]},
+            { q: "对自己未来的期待?", options: [
+                { text: "自由创意，充满可能", scores: { creativity: 5, sociability: 2, practicality: 1, thoughtfulness: 2, confidence: 5, aesthetics: 5 } },
+                { text: "和爱的人在一起，很充实", scores: { creativity: 1, sociability: 5, practicality: 2, thoughtfulness: 2, confidence: 2, aesthetics: 1 } },
+                { text: "成功有成就，不断进步", scores: { creativity: 1, sociability: 1, practicality: 5, thoughtfulness: 2, confidence: 5, aesthetics: 1 } },
+                { text: "有深度有意义，精神富有", scores: { creativity: 1, sociability: 1, practicality: 1, thoughtfulness: 5, confidence: 2, aesthetics: 2 } }
+            ]}
+        ];
+
+        const personalityTypes = {
+            "创意女孩": {
+                icon: "🎨",
+                desc: "你就是那种脑子里全是想法的女孩。热爱表达、勇于创新，不喜欢走寻常路。生活在你眼里就是一场大冒险，你用创意影响身边的每一个人。你的与众不同，就是你最大的魅力。",
+                traits: ["脑子全是想法", "热爱表达", "与众不同", "勇于尝试", "充满热情"],
+                suggestion: "你的创意是天赋，但有时也要落地。不要被完美主义困扰，行动中的迭代往往比想象更有价值。多倾听他人想法，会让你的创意更有共鸣。"
+            },
+            "社交女孩": {
+                icon: "👯",
+                desc: "你是天生的社交高手。热情、温暖、善解人意，哪里都能融入。身边的人都喜欢和你在一起，因为你能让每个人都感到被看见和被在乎。你的魅力，就来自于你真诚的关心。",
+                traits: ["热情似火", "善解人意", "人脉超广", "高情商", "温暖有趣"],
+                suggestion: "你的社交天赋是宝贵的，同时也可以发展独立完成事物的能力。偶尔独处会让你更了解自己。不要被他人意见过度影响，保持自己的声音。"
+            },
+            "执行女孩": {
+                icon: "⚡",
+                desc: "你是说到做到的行动派。有清晰的目标、强大的执行力，把想法变成现实对你来说就是小菜一碟。你相信坚持和方法，用行动去改变生活。你的能力，就是你最好的证明。",
+                traits: ["说到做到", "执行力强", "目标明确", "很靠谱", "坚定不移"],
+                suggestion: "你的执行力是竞争力，但有时不妨给自己些探索的空间。工作之外也要照顾情感和精神需求。允许自己慢下来享受过程，不是所有事都必须最优化。"
+            },
+            "思考女孩": {
+                icon: "🧠",
+                desc: "你是那种喜欢看透事物本质的女孩。深度思考、洞察力强，你对人生和世界有独到的见解。你用心去理解世界，思想深邃而有力量，是真正的智慧型女孩。你的智慧，是你最大的底气。",
+                traits: ["看透本质", "思想深邃", "洞察力强", "有品味", "理性客观"],
+                suggestion: "你的思考力帮助你看清本质，也要记得行动和表达。不必过度思考导致行动延迟，有时候做比想更重要。分享你的想法，世界需要听到你的声音。"
+            },
+            "全能女孩": {
+                icon: "🦄",
+                desc: "你就是那个\"别人家的女孩\"。创意、社交、执行、思考样样出众，你就像一个万能的女孩。能够在不同场景灵活切换，这是你最大的优势。你的可能性，是无限的。",
+                traits: ["多才多艺", "样样精通", "灵活变通", "全面发展", "完美平衡"],
+                suggestion: "你的多维优势是独特的，要注意不要样样都想做而分散精力。找到你最热衷的领域深耕，会更容易出现突破性成就。保持你的平衡感，它是你最珍贵的品质。"
+            }
+        };
+
+        let currentQuestion = 0;
+        let scores = { creativity: 0, sociability: 0, practicality: 0, thoughtfulness: 0, confidence: 0, aesthetics: 0 };
+
+        function togglePreview() {
+            const preview = document.getElementById('previewResults');
+            preview.style.display = preview.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function startTest() {
+            document.getElementById('landing').classList.add('hidden');
+            document.getElementById('testWrapper').classList.remove('hidden');
+            renderQuestions();
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            
+            questions.forEach((q, idx) => {
+                const qHtml = `
+                    <div class="question-card" id="q-${idx}">
+                        <div class="q-number">第 ${idx + 1} / ${questions.length} 题</div>
+                        <div class="q-text">${q.q}</div>
+                        <div class="q-options">
+                            ${q.options.map((opt, optIdx) => `
+                                <label class="q-option">
+                                    <input type="radio" name="q${idx}" value="${optIdx}" onchange="handleAnswer(${idx}, ${optIdx})">
+                                    <div class="q-label">
+                                        <div class="q-circle"></div>
+                                        ${opt.text}
+                                    </div>
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += qHtml;
+            });
+
+            document.getElementById(`q-0`).classList.add('active');
+            updateProgress();
+        }
+
+        function handleAnswer(qIdx, optIdx) {
+            const scoreData = questions[qIdx].options[optIdx].scores;
+            Object.keys(scoreData).forEach(key => {
+                scores[key] += scoreData[key];
+            });
+
+            setTimeout(() => {
+                document.getElementById(`q-${currentQuestion}`).classList.remove('active');
+                currentQuestion++;
+                
+                if (currentQuestion < questions.length) {
+                    document.getElementById(`q-${currentQuestion}`).classList.add('active');
+                    updateProgress();
+                } else {
+                    showResult();
+                }
+            }, 300);
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function getPersonalityType() {
+            const { creativity, sociability, practicality, thoughtfulness } = scores;
+            const scoreArray = [
+                { type: "创意女孩", score: creativity },
+                { type: "社交女孩", score: sociability },
+                { type: "执行女孩", score: practicality },
+                { type: "思考女孩", score: thoughtfulness }
+            ];
+
+            const max = Math.max(...scoreArray.map(x => x.score));
+            const maxItems = scoreArray.filter(x => x.score === max);
+            
+            if (maxItems.length > 1) {
+                return "全能女孩";
+            }
+            return scoreArray.find(x => x.score === max).type;
+        }
+
+        function showResult() {
+            const type = getPersonalityType();
+            const data = personalityTypes[type];
+
+            const maxPossible = 150;
+            const normalizedScores = {
+                creativity: Math.min(100, (scores.creativity / maxPossible) * 100),
+                sociability: Math.min(100, (scores.sociability / maxPossible) * 100),
+                practicality: Math.min(100, (scores.practicality / maxPossible) * 100),
+                thoughtfulness: Math.min(100, (scores.thoughtfulness / maxPossible) * 100),
+                confidence: Math.min(100, (scores.confidence / maxPossible) * 100),
+                aesthetics: Math.min(100, (scores.aesthetics / maxPossible) * 100)
+            };
+
+            const labels = ['创意力', '社交力', '执行力', '思考力', '自信力', '审美力'];
+            const scoreValues = [normalizedScores.creativity, normalizedScores.sociability, normalizedScores.practicality, normalizedScores.thoughtfulness, normalizedScores.confidence, normalizedScores.aesthetics];
+
+            let resultHtml = `
+                <div class="result-icon">${data.icon}</div>
+                <div class="result-title">${type}</div>
+                <div class="result-desc">${data.desc}</div>
+                
+                <div class="dimensions-table">
+                    <div style="margin-bottom: 12px; font-weight: 600; color: #333;">维度分析</div>
+            `;
+
+            const dimensionLabels = {
+                creativity: '创意力',
+                sociability: '社交力',
+                practicality: '执行力',
+                thoughtfulness: '思考力',
+                confidence: '自信力',
+                aesthetics: '审美力'
+            };
+
+            Object.entries(normalizedScores).forEach(([key, value]) => {
+                resultHtml += `
+                    <div class="dim-row">
+                        <div class="dim-label">${dimensionLabels[key]}</div>
+                        <div class="dim-score">${Math.round(value)}%</div>
+                    </div>
+                `;
+            });
+
+            resultHtml += `</div>`;
+
+            resultHtml += `
+                <div class="radar-box">
+                    <canvas id="radarChart"></canvas>
+                </div>
+
+                <div class="traits-box">
+                    <div class="traits-title">核心特质</div>
+                    <div class="traits">
+                        ${data.traits.map(t => `<div class="trait-tag">${t}</div>`).join('')}
+                    </div>
+                </div>
+
+                <div class="suggestion-box">
+                    <div class="suggestion-title">💡 成长建议</div>
+                    <div>${data.suggestion}</div>
+                </div>
+
+                <button class="restart-btn" onclick="location.reload()">重新测试</button>
+            `;
+
+            document.getElementById('questionsContainer').style.display = 'none';
+            const resultContainer = document.getElementById('resultContainer');
+            resultContainer.innerHTML = resultHtml;
+
+            setTimeout(() => {
+                const ctx = document.getElementById('radarChart');
+                if (ctx && window.Chart) {
+                    new Chart(ctx, {
+                        type: 'radar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: '你的人格维度',
+                                data: scoreValues,
+                                borderColor: '#FF6B9D',
+                                backgroundColor: 'rgba(255, 107, 157, 0.15)',
+                                borderWidth: 3,
+                                pointBackgroundColor: '#FF6B9D',
+                                pointBorderColor: '#fff',
+                                pointBorderWidth: 2,
+                                pointRadius: 5,
+                                fill: true
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: true,
+                            plugins: {
+                                legend: {
+                                    display: true,
+                                    labels: {
+                                        font: { size: 13, weight: '600' },
+                                        color: '#333',
+                                        padding: 15
+                                    }
+                                }
+                            },
+                            scales: {
+                                r: {
+                                    min: 0,
+                                    max: 100,
+                                    ticks: {
+                                        stepSize: 25,
+                                        font: { size: 11 },
+                                        color: '#999'
+                                    },
+                                    grid: {
+                                        color: 'rgba(0, 0, 0, 0.05)'
+                                    },
+                                    angleLines: {
+                                        color: 'rgba(0, 0, 0, 0.05)'
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }, 100);
+        }
+    </script>
+</body>
+</html>
